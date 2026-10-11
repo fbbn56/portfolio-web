@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bharat | Web Developer & Software Enthusiast</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'><circle cx='12' cy='12' r='10'/><path d='m9 12 2 2 4-4'/></svg>" />
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              black: '#0a0a0a',
+              dark: '#121212',
+              card: '#18181b',
+              gray: '#64748b',
+              lightGray: '#f8fafc',
+              border: '#e2e8f0',
+              borderDark: '#27272a'
+            }
+          },
+          boxShadow: {
+            'pill': '0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.02)',
+            'pill-dark': '0 4px 20px -2px rgba(0, 0, 0, 0.4), 0 2px 6px -1px rgba(0, 0, 0, 0.3)',
+            'card-hover': '0 12px 30px -10px rgba(0,0,0,0.08)'
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- React & Babel CDNs -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    /* Custom scrollbar and subtle transitions */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .dark ::-webkit-scrollbar-track {
+      background: #09090b;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    .dark ::-webkit-scrollbar-thumb {
+      background: #27272a;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* Blinking typing cursor */
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    .cursor-blink {
+      animation: blink 1s infinite;
+    }
+
+    /* Subtle grid background */
+    .bg-grid-pattern {
+      background-size: 32px 32px;
+      background-image: 
+        linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+    }
+    .dark .bg-grid-pattern {
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    }
+  </style>
+</head>
+<body class="bg-[#fafafa] dark:bg-[#09090b] text-[#171717] dark:text-[#f4f4f5] transition-colors duration-300 font-sans antialiased selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black">
+  <div id="root"></div>
+
+  <!-- React Application Source -->
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // --- ICONS (Clean, lightweight SVG components) ---
+    const IconHome = ({ className = "w-4 h-4" }) => (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+    );
+
+    const IconUser = ({ className = "w-4 h-4" }) => (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+    );
+
+    const IconFolder = ({ className = "w-4 h-4" }) => (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>
+      </svg>
+    );
+
+    const IconCode = ({ className = "w-4 h-4" }) => (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="16 18 22 12 16 6"/>
+        <polyline points="8 6 2 12 8 18"/>
+      </svg>
+    );
+
+    const IconMail = ({ className = "w-4 h-4" }) => (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect width="20" height="16" x="2" y="4" rx="2"/>
+        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+      </svg>
+    );
+
+    const IconTrophy = ({ className = "w-4 h-4" }) => (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+        <path d="M4 22h16"/>
+        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+      </svg>
+    );
+
+    const IconDownload = ({ className = "w-4 h-4" }) => (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" x2="12" y1="15" y2="3"/>
+      </svg>
+    );
+
+    const IconArrowRight = ({ className = "w-4 h-4" }) => (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M5 12h14"/>
+        <path d="m12 5 7 7-7 7"/>
+      </svg>
+    );
+
+    const IconMapPin = ({ className = "w-4 h-4" }) => (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+        <circle cx="12" cy="10" r="3"/>
+      </svg>
+    );
+
+    const IconBriefcase = ({ className = "w-4 h-4" }) => (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect width="20" height="14" x="2" y="7" rx="2" ry="2"/>
+        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+      </svg>
+    );
+
+    const IconGithub = ({ className = "w-4 h-4" }) => (
+      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+        <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+      </svg>
+    );
+
+    const IconDiscord = ({ className = "w-4 h-4" }) => (
+      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+        <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.893.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+      </svg>
+    );
+
+    const IconLinkedin = ({ className = "w-4 h-4" }) => (
+      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.6 1.6 0 1 0 0-3.2 1.6 1.6 0 0 0 0 3.2m1.4 9.74v-8.37H5.06v8.37h2.8z"/>
+      </svg>
+    );
+
+    const IconInstagram = ({ className = "w-4 h-4" }) => (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
+        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+        <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+      </svg>
+    );
+
+    const IconSun = ({ className = "w-4 h-4" }) => (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2"/><path d="M12 20v2"/>
+        <path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/>
+        <path d="M2 12h2"/><path d="M20 12h2"/>
+        <path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
+      </svg>
+    );
+
+    const IconMoon = ({ className = "w-4 h-4" }) => (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+      </svg>
+    );
+
+    const IconCheck = ({ className = "w-4 h-4" }) => (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    );
+
+    const IconCopy = ({ className = "w-4 h-4" }) => (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+        <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+      </svg>
+    );
+
+    const IconExternalLink = ({ className = "w-4 h-4" }) => (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+        <polyline points="15 3 21 3 21 9"/>
+        <line x1="10" x2="21" y1="14" y2="3"/>
+      </svg>
+    );
+
+    // --- MAIN APP COMPONENT ---
+    function App() {
+      const [activeSection, setActiveSection] = useState('home');
+      const [darkMode, setDarkMode] = useState(false);
+      const [toastMessage, setToastMessage] = useState('');
+      const [showResumeModal, setShowResumeModal] = useState(false);
+      const [activeProjectFilter, setActiveProjectFilter] = useState('all');
+      const [activeCodeTab, setActiveCodeTab] = useState('python');
+
+      // Typewriter states
+      const roles = [
+        "Web Developer",
+        "Python Programmer",
+        "C Enthusiast",
+        "SIH 2026 Participant",
+        "CS Student @ JECRC"
+      ];
+      const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
+      const [displayText, setDisplayText] = useState('');
+      const [isDeleting, setIsDeleting] = useState(false);
+
+      // Typing animation effect
+      useEffect(() => {
+        const fullText = roles[currentRoleIndex];
+        const typingSpeed = isDeleting ? 40 : 90;
+        
+        const timer = setTimeout(() => {
+          if (!isDeleting) {
+            setDisplayText(fullText.substring(0, displayText.length + 1));
+            if (displayText === fullText) {
+              setTimeout(() => setIsDeleting(true), 1800);
+            }
+          } else {
+            setDisplayText(fullText.substring(0, displayText.length - 1));
+            if (displayText === '') {
+              setIsDeleting(false);
+              setCurrentRoleIndex((prev) => (prev + 1) % roles.length);
+            }
+          }
+        }, typingSpeed);
+
+        return () => clearTimeout(timer);
+      }, [displayText, isDeleting, currentRoleIndex]);
+
+      // Initialize theme preference
+      useEffect(() => {
+        const isDark = localStorage.getItem('theme') === 'dark' || 
+          (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        setDarkMode(isDark);
+        if (isDark) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      }, []);
+
+      const toggleTheme = () => {
+        const nextMode = !darkMode;
+        setDarkMode(nextMode);
+        if (nextMode) {
+          document.documentElement.classList.add('dark');
+          localStorage.setItem('theme', 'dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+          localStorage.setItem('theme', 'light');
+        }
+      };
+
+      // Show toast
+      const triggerToast = (msg) => {
+        setToastMessage(msg);
+        setTimeout(() => setToastMessage(''), 3000);
+      };
+
+      // Copy email action
+      const handleCopyEmail = () => {
+        navigator.clipboard.writeText('bharat.jecrc@gmail.com');
+        triggerToast('Email copied to clipboard: bharat.jecrc@gmail.com');
+      };
+
+      // Smooth scroll to section
+      const scrollTo = (id) => {
+        setActiveSection(id);
+        const el = document.getElementById(id);
+        if (el) {
+          const yOffset = -90;
+          const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+      };
+
+      // Listen to scroll to update active section
+      useEffect(() => {
+        const handleScroll = () => {
+          const sections = ['home', 'about', 'projects', 'hackathons', 'services', 'contact'];
+          const scrollPosition = window.scrollY + 120;
+          for (const section of sections) {
+            const el = document.getElementById(section);
+            if (el) {
+              const top = el.offsetTop;
+              const height = el.offsetHeight;
+              if (scrollPosition >= top && scrollPosition < top + height) {
+                setActiveSection(section);
+                break;
+              }
+            }
+          }
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+      }, []);
+
+      // Projects Data
+      const projects = [
+        {
+          id: 1,
+          title: "CivicPulse: SIH 2026 Smart Grievance Engine",
+          category: "hackathons",
+          tag: "Smart India Hackathon 2026",
+          description: "Full-stack citizen service platform built for SIH 2026. Features an intelligent Python problem-clustering algorithm, REST backend, and responsive React web portal.",
+          tech: ["React.js", "Python", "Tailwind CSS", "FastAPI", "SIH 2026"],
+          highlights: ["Automated ticket triage", "Real-time status tracking", "JECRC University team prototype"],
+          github: "https://github.com/bharat-dev/sih2026-civicpulse",
+          live: "#"
+        },
+        {
+          id: 2,
+          title: "C-Core: Fast In-Memory Cache & Key-Value Store",
+          category: "c",
+          tag: "Systems & Algorithms in C",
+          description: "High-performance key-value caching system written in C from scratch. Features custom hash-map with linear probing, LRU eviction policy, and memory arenas.",
+          tech: ["C Language", "Data Structures", "Memory Management", "GCC", "Make"],
+          highlights: ["O(1) average lookup", "Zero memory leaks (Valgrind verified)", "Custom serialization"],
+          github: "https://github.com/bharat-dev/c-core-cache",
+          live: "#"
+        },
+        {
+          id: 3,
+          title: "PyAutomate: Smart Workflow & Scraper Toolkit",
+          category: "python",
+          tag: "Python Tooling",
+          description: "Modular Python automation suite for engineering students: automated attendance and assignment tracker, academic notice scraping, and batch file organizers.",
+          tech: ["Python 3", "BeautifulSoup4", "CLI", "AsyncIO", "Automation"],
+          highlights: ["Automated CLI reports", "Background scheduler", "Custom PDF exporter"],
+          github: "https://github.com/bharat-dev/py-automate-suite",
+          live: "#"
+        },
+        {
+          id: 4,
+          title: "AlgoVisualizer: Interactive Pathfinding in Web",
+          category: "web",
+          tag: "React Web App",
+          description: "Interactive web visualization for classic graph search algorithms implemented with clean React state management and animated grid transitions.",
+          tech: ["React.js", "Algorithms", "Tailwind CSS", "Vite"],
+          highlights: ["Dijkstra & A* algorithms", "Maze generator", "Speed controls"],
+          github: "https://github.com/bharat-dev/algo-visualizer-react",
+          live: "#"
+        },
+        {
+          id: 5,
+          title: "JECRC First-Year Engineering Resource Hub",
+          category: "web",
+          tag: "Student Community Web Portal",
+          description: "Centralized knowledge base and previous year paper archive designed for JECRC University 1st-year CSE peers with instant search and download.",
+          tech: ["React", "JavaScript", "Responsive Design", "Local Storage"],
+          highlights: ["Curated notes for C & Python", "University syllabus tracker", "100+ active peers"],
+          github: "https://github.com/bharat-dev/jecrc-resource-hub",
+          live: "#"
+        }
+      ];
+
+      const filteredProjects = activeProjectFilter === 'all' 
+        ? projects 
+        : projects.filter(p => p.category === activeProjectFilter || (activeProjectFilter === 'web' && p.category === 'web'));
+
+      return (
+        <div className="min-h-screen bg-[#fafafa] dark:bg-[#09090b] text-[#171717] dark:text-[#f4f4f5] transition-colors duration-300 relative">
+          
+          {/* Toast Notification */}
+          {toastMessage && (
+            <div className="fixed bottom-6 right-6 z-50 bg-black dark:bg-white text-white dark:text-black px-4 py-2.5 rounded-full text-xs sm:text-sm font-medium shadow-xl flex items-center gap-2 animate-bounce">
+              <IconCheck className="w-4 h-4 text-emerald-400 dark:text-emerald-600" />
+              <span>{toastMessage}</span>
+            </div>
+          )}
+
+          {/* ============================================================== */}
+          {/* 1. TOP FLOATING PILL NAVBAR (Faithful to theme in screenshot)  */}
+          {/* ============================================================== */}
+          <header className="fixed top-4 sm:top-6 inset-x-0 z-40 flex justify-center px-4 pointer-events-none">
+            <nav className="pointer-events-auto bg-white/90 dark:bg-[#121214]/90 backdrop-blur-md border border-neutral-200/90 dark:border-neutral-800 rounded-full p-1.5 shadow-pill dark:shadow-pill-dark flex items-center gap-1 sm:gap-1.5 transition-all">
+              
+              {/* Home */}
+              <button
+                onClick={() => scrollTo('home')}
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 ${
+                  activeSection === 'home'
+                    ? 'bg-black text-white dark:bg-white dark:text-black shadow-sm'
+                    : 'text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800/60'
+                }`}
+              >
+                <IconHome className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span>Home</span>
+              </button>
+
+              {/* About */}
+              <button
+                onClick={() => scrollTo('about')}
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 ${
+                  activeSection === 'about'
+                    ? 'bg-black text-white dark:bg-white dark:text-black shadow-sm'
+                    : 'text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800/60'
+                }`}
+              >
+                <IconUser className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span>About</span>
+              </button>
+
+              {/* Projects */}
+              <button
+                onClick={() => scrollTo('projects')}
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 ${
+                  activeSection === 'projects'
+                    ? 'bg-black text-white dark:bg-white dark:text-black shadow-sm'
+                    : 'text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800/60'
+                }`}
+              >
+                <IconFolder className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span>Projects</span>
+              </button>
+
+              {/* Services / Skills */}
+              <button
+                onClick={() => scrollTo('services')}
+                className={`hidden md:flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 ${
+                  activeSection === 'services'
+                    ? 'bg-black text-white dark:bg-white dark:text-black shadow-sm'
+                    : 'text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800/60'
+                }`}
+              >
+                <IconCode className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span>services</span>
+              </button>
+
+              {/* Contact */}
+              <button
+                onClick={() => scrollTo('contact')}
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 ${
+                  activeSection === 'contact'
+                    ? 'bg-black text-white dark:bg-white dark:text-black shadow-sm'
+                    : 'text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800/60'
+                }`}
+              >
+                <IconMail className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span>Contact</span>
+              </button>
+
+              {/* Theme Toggle Button */}
+              <div className="pl-1 sm:pl-2 ml-1 border-l border-neutral-200 dark:border-neutral-800 flex items-center">
+                <button
+                  onClick={toggleTheme}
+                  aria-label="Toggle theme"
+                  className="p-1.5 rounded-full text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 transition"
+                >
+                  {darkMode ? <IconSun className="w-4 h-4 text-amber-400" /> : <IconMoon className="w-4 h-4 text-neutral-700" />}
+                </button>
+              </div>
+
+            </nav>
+          </header>
+
+          {/* ============================================================== */}
+          {/* 2. HERO SECTION (100% theme match with the user reference)   */}
+          {/* ============================================================== */}
+          <main className="max-w-6xl mx-auto px-6 sm:px-8 pt-28 sm:pt-36 pb-20">
+            <section id="home" className="pt-4 pb-16 sm:pb-24">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+                
+                {/* Left Column (Text & Actions) */}
+                <div className="lg:col-span-7 space-y-6">
+                  
+                  {/* Status Badge */}
+                  <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-xs sm:text-sm text-neutral-700 dark:text-neutral-300">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                    <span>. Available for freelance work & hackathons</span>
+                  </div>
+
+                  {/* Name Headline */}
+                  <div>
+                    <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-neutral-950 dark:text-white leading-tight">
+                      Hi, I'm Bharat
+                    </h1>
+                    
+                    {/* Animated Role with typing cursor */}
+                    <div className="mt-2 text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-0.5">
+                      <span>{displayText}</span>
+                      <span className="inline-block w-[3px] h-7 bg-neutral-900 dark:bg-neutral-100 ml-1 cursor-blink"></span>
+                    </div>
+                  </div>
+
+                  {/* Bio Description */}
+                  <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-400 leading-relaxed max-w-xl">
+                    I create beautiful, functional, and user-centered digital experiences. First-year Computer Science student at <strong className="text-neutral-900 dark:text-white font-semibold">JECRC University</strong> with solid programming foundations in <span className="font-semibold text-neutral-900 dark:text-white">Python</span> and <span className="font-semibold text-neutral-900 dark:text-white">C</span>, crafting modern web solutions with clean code and thoughtful design.
+                  </p>
+
+                  {/* Location & Status Meta */}
+                  <div className="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 pt-1">
+                    <div className="flex items-center gap-1.5">
+                      <IconMapPin className="w-4 h-4 text-neutral-500" />
+                      <span>Based in Jaipur, India (JECRC Univ)</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <IconBriefcase className="w-4 h-4 text-neutral-500" />
+                      <span className="font-medium text-emerald-600 dark:text-emerald-400">Available Now</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 bg-neutral-100 dark:bg-neutral-900 px-2.5 py-0.5 rounded-full border border-neutral-200 dark:border-neutral-800">
+                      <IconTrophy className="w-3.5 h-3.5 text-amber-500" />
+                      <span className="font-medium text-neutral-800 dark:text-neutral-200">SIH 2026 Ready</span>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex flex-wrap items-center gap-3 pt-2">
+                    <button
+                      onClick={() => scrollTo('contact')}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-black text-white dark:bg-white dark:text-black font-medium text-sm hover:opacity-90 transition active:scale-95 shadow-sm group"
+                    >
+                      <span>→ Hire Me</span>
+                    </button>
+                    
+                    <button
+                      onClick={() => setShowResumeModal(true)}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 font-medium text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800 transition active:scale-95"
+                    >
+                      <IconDownload className="w-4 h-4" />
+                      <span>Download CV</span>
+                    </button>
+                  </div>
+
+                  {/* Thin Divider Line matching reference image */}
+                  <div className="pt-4">
+                    <div className="w-full border-t border-neutral-200 dark:border-neutral-800"></div>
+                  </div>
+
+                  {/* Follow me section */}
+                  <div className="flex items-center gap-4 pt-1">
+                    <span className="text-xs sm:text-sm font-medium text-neutral-700 dark:text-neutral-300">Follow me:</span>
+                    <div className="flex items-center gap-3">
+                      <a 
+                        href="https://github.com" 
+                        target="_blank" 
+                        rel="noreferrer" 
+                        title="GitHub"
+                        className="text-neutral-700 dark:text-neutral-300 hover:text-black dark:hover:text-white transition p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded"
+                      >
+                        <IconGithub className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </a>
+                      <a 
+                        href="https://discord.com" 
+                        target="_blank" 
+                        rel="noreferrer" 
+                        title="Discord"
+                        className="text-neutral-700 dark:text-neutral-300 hover:text-black dark:hover:text-white transition p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded"
+                      >
+                        <IconDiscord className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </a>
+                      <a 
+                        href="https://linkedin.com" 
+                        target="_blank" 
+                        rel="noreferrer" 
+                        title="LinkedIn"
+                        className="text-neutral-700 dark:text-neutral-300 hover:text-black dark:hover:text-white transition p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded"
+                      >
+                        <IconLinkedin className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </a>
+                      <a 
+                        href="https://instagram.com" 
+                        target="_blank" 
+                        rel="noreferrer" 
+                        title="Instagram"
+                        className="text-neutral-700 dark:text-neutral-300 hover:text-black dark:hover:text-white transition p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded"
+                      >
+                        <IconInstagram className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </a>
+                      <button 
+                        onClick={handleCopyEmail}
+                        title="Copy Email"
+                        className="text-neutral-700 dark:text-neutral-300 hover:text-black dark:hover:text-white transition p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded flex items-center gap-1 text-xs"
+                      >
+                        <IconCopy className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
+
+                {/* Right Column (Aesthetic Programmer Illustration from Theme) */}
+                <div className="lg:col-span-5 flex justify-center lg:justify-end">
+                  <div className="relative group max-w-sm w-full">
+                    
+                    {/* Minimalist image container */}
+                    <div className="relative bg-white dark:bg-[#121214] rounded-2xl p-4 sm:p-5 border border-neutral-200 dark:border-neutral-800 shadow-sm transition-all duration-300 hover:shadow-card-hover">
+                      
+                      {/* Terminal-like top bar */}
+                      <div className="flex items-center justify-between pb-3 mb-2 border-b border-neutral-100 dark:border-neutral-800 text-xs font-mono text-neutral-400">
+                        <div className="flex items-center gap-1.5">
+                          <span className="w-2.5 h-2.5 rounded-full bg-red-400"></span>
+                          <span className="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+                          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                        </div>
+                        <span className="text-[11px] font-sans font-medium text-neutral-500">bharat@jecrc-cse: ~</span>
+                      </div>
+
+                      {/* Developer Illustration (From screenshot) */}
+                      <div className="overflow-hidden rounded-xl bg-white dark:bg-neutral-900/50 flex items-center justify-center p-2">
+                        <img 
+                          src="assets/avatar.png" 
+                          alt="Bharat - Web Developer at Computer" 
+                          className="w-full max-h-[340px] object-contain select-none transition-transform duration-500 group-hover:scale-[1.02]"
+                          onError={(e) => {
+                            // Fallback if local asset isn't loaded
+                            e.target.src = "assets/avatar_precise.png";
+                          }}
+                        />
+                      </div>
+
+                      {/* Floating Minimal Badges */}
+                      <div className="mt-4 pt-3 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-1.5 text-neutral-600 dark:text-neutral-400 font-medium">
+                          <span className="w-2 h-2 rounded-full bg-neutral-900 dark:bg-white"></span>
+                          <span>C & Python Specialist</span>
+                        </div>
+                        <span className="text-neutral-400 font-mono text-[11px]">SIH '26 Ready</span>
+                      </div>
+
+                    </div>
+
+                  </div>
+                </div>
+
+              </div>
+            </section>
+
+            {/* ============================================================== */}
+            {/* 3. ABOUT SECTION (Education at JECRC, Python, C, Philosophy)  */}
+            {/* ============================================================== */}
+            <section id="about" className="py-16 sm:py-20 border-t border-neutral-200 dark:border-neutral-800">
+              <div className="space-y-12">
+                
+                {/* Section Header */}
+                <div className="space-y-2">
+                  <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                    <IconUser className="w-3.5 h-3.5" />
+                    <span>Background & Education</span>
+                  </div>
+                  <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-950 dark:text-white">
+                    About Bharat
+                  </h2>
+                  <p className="text-neutral-600 dark:text-neutral-400 max-w-2xl text-base sm:text-lg">
+                    First-year Computer Science Engineering student bridging low-level system understanding with modern web architectures.
+                  </p>
+                </div>
+
+                {/* Grid: Story + Highlights */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                  
+                  {/* Left Column: Detailed Bio */}
+                  <div className="lg:col-span-7 space-y-5 text-neutral-700 dark:text-neutral-300 leading-relaxed text-sm sm:text-base">
+                    <p>
+                      Hello! My name is <strong className="text-neutral-950 dark:text-white font-semibold">Bharat</strong>. I am currently in my first year studying Computer Science and Engineering at <strong className="text-neutral-950 dark:text-white font-semibold">JECRC University</strong> in Jaipur.
+                    </p>
+                    <p>
+                      My journey into tech started with <strong className="text-neutral-900 dark:text-white font-semibold">C programming</strong>, where I developed a deep appreciation for low-level memory mechanics, pointers, and clean algorithmic problem-solving. This disciplined foundation gave me the clarity to master <strong className="text-neutral-900 dark:text-white font-semibold">Python</strong> for rapid prototyping, data logic, and workflow automation.
+                    </p>
+                    <p>
+                      As a <strong className="text-neutral-900 dark:text-white font-semibold">Web Developer</strong>, I specialize in combining robust backend reasoning with clean, intuitive <strong className="text-neutral-900 dark:text-white font-semibold">React.js</strong> interfaces. Whether it's architecting a component hierarchy or writing efficient algorithmic scripts, I thrive on writing readable, high-performance code.
+                    </p>
+                    <p>
+                      Most recently, I channeled this passion into the prestigious <strong className="text-neutral-950 dark:text-white font-semibold">Smart India Hackathon 2026</strong>, building a technology solution designed to tackle complex real-world civic challenges.
+                    </p>
+
+                    {/* Interactive Code Preview (C vs Python) */}
+                    <div className="pt-4">
+                      <div className="bg-neutral-900 text-neutral-100 rounded-xl overflow-hidden border border-neutral-800 shadow-sm text-xs font-mono">
+                        <div className="flex items-center justify-between px-4 py-2 bg-neutral-950/80 border-b border-neutral-800">
+                          <div className="flex items-center gap-2">
+                            <span className="text-neutral-400 text-[11px]">Developer Philosophy</span>
+                          </div>
+                          <div className="flex gap-1">
+                            <button
+                              onClick={() => setActiveCodeTab('python')}
+                              className={`px-2.5 py-1 rounded text-[11px] font-medium transition ${
+                                activeCodeTab === 'python' ? 'bg-neutral-800 text-white' : 'text-neutral-400 hover:text-white'
+                              }`}
+                            >
+                              main.py
+                            </button>
+                            <button
+                              onClick={() => setActiveCodeTab('c')}
+                              className={`px-2.5 py-1 rounded text-[11px] font-medium transition ${
+                                activeCodeTab === 'c' ? 'bg-neutral-800 text-white' : 'text-neutral-400 hover:text-white'
+                              }`}
+                            >
+                              solution.c
+                            </button>
+                          </div>
+                        </div>
+                        <div className="p-4 leading-relaxed overflow-x-auto">
+                          {activeCodeTab === 'python' ? (
+                            <pre>
+                              <code>{`# Bharat's Development Mantra
+class Developer:
+    name = "Bharat"
+    university = "JECRC University (1st Year)"
+    skills = ["Python", "C", "React.js", "Web Dev"]
+    hackathon = "Smart India Hackathon 2026"
+
+    def build_solution(self, problem):
+        return f"Transforming {problem} into clean, scalable software."
+
+bharat = Developer()
+print(bharat.build_solution("real-world challenges"))`}</code>
+                            </pre>
+                          ) : (
+                            <pre>
+                              <code>{`// Core Foundations in C
+#include <stdio.h>
+
+int main() {
+    char name[] = "Bharat";
+    char college[] = "JECRC University";
+    char hackathon[] = "Smart India Hackathon 2026";
+
+    printf("Student: %s (1st Year CSE)\\n", name);
+    printf("University: %s\\n", college);
+    printf("Current Focus: %s\\n", hackathon);
+    return 0; // Success
+}`}</code>
+                            </pre>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+
+                  {/* Right Column: Key Metric & Info Cards */}
+                  <div className="lg:col-span-5 space-y-4">
+                    
+                    {/* Education Card */}
+                    <div className="p-5 rounded-2xl bg-white dark:bg-[#121214] border border-neutral-200 dark:border-neutral-800 shadow-sm space-y-2">
+                      <div className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Education</div>
+                      <div className="text-lg font-bold text-neutral-900 dark:text-white">B.Tech in Computer Science</div>
+                      <div className="text-sm font-medium text-neutral-600 dark:text-neutral-400">JECRC University, Jaipur</div>
+                      <div className="text-xs text-neutral-500">First Year Student • Expected Graduation 2029</div>
+                      <div className="pt-2 flex flex-wrap gap-1.5">
+                        <span className="px-2 py-0.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-[11px] font-medium text-neutral-700 dark:text-neutral-300">Data Structures</span>
+                        <span className="px-2 py-0.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-[11px] font-medium text-neutral-700 dark:text-neutral-300">Algorithms</span>
+                        <span className="px-2 py-0.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-[11px] font-medium text-neutral-700 dark:text-neutral-300">Web Tech</span>
+                      </div>
+                    </div>
+
+                    {/* Hackathon Spotlight Card */}
+                    <div className="p-5 rounded-2xl bg-black dark:bg-white text-white dark:text-black shadow-md space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-mono uppercase tracking-wider opacity-80">Milestone</span>
+                        <IconTrophy className="w-4 h-4 text-amber-400 dark:text-amber-600" />
+                      </div>
+                      <div className="text-lg font-bold">Smart India Hackathon 2026</div>
+                      <p className="text-xs sm:text-sm opacity-90 leading-relaxed">
+                        Representing JECRC University in SIH 2026, building tech prototypes for national impact through 36 hours of rigorous collaborative engineering.
+                      </p>
+                      <button
+                        onClick={() => scrollTo('hackathons')}
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold underline underline-offset-4 hover:opacity-80"
+                      >
+                        <span>View SIH 2026 Details</span>
+                        <IconArrowRight className="w-3 h-3" />
+                      </button>
+                    </div>
+
+                    {/* Quick Stats Grid */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="p-4 rounded-xl bg-white dark:bg-[#121214] border border-neutral-200 dark:border-neutral-800 text-center">
+                        <div className="text-2xl font-extrabold text-neutral-900 dark:text-white">1st Year</div>
+                        <div className="text-xs text-neutral-500 mt-0.5">JECRC University</div>
+                      </div>
+                      <div className="p-4 rounded-xl bg-white dark:bg-[#121214] border border-neutral-200 dark:border-neutral-800 text-center">
+                        <div className="text-2xl font-extrabold text-neutral-900 dark:text-white">SIH '26</div>
+                        <div className="text-xs text-neutral-500 mt-0.5">Participant</div>
+                      </div>
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+            </section>
+
+            {/* ============================================================== */}
+            {/* 4. SKILLS SECTION (Spotlight on Python, C, Web Development)   */}
+            {/* ============================================================== */}
+            <section id="services" className="py-16 sm:py-20 border-t border-neutral-200 dark:border-neutral-800">
+              <div className="space-y-12">
+                
+                {/* Section Header */}
+                <div className="space-y-2">
+                  <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                    <IconCode className="w-3.5 h-3.5" />
+                    <span>Technical Toolkit & Services</span>
+                  </div>
+                  <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-950 dark:text-white">
+                    Skills & Competencies
+                  </h2>
+                  <p className="text-neutral-600 dark:text-neutral-400 max-w-2xl text-base sm:text-lg">
+                    Core technical mastery in systems programming with C, scripting with Python, and interactive web engineering.
+                  </p>
+                </div>
+
+                {/* Skills Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                  
+                  {/* Skill Card 1: Python */}
+                  <div className="p-6 rounded-2xl bg-white dark:bg-[#121214] border border-neutral-200 dark:border-neutral-800 hover:border-black dark:hover:border-white transition-all duration-300 space-y-3 group shadow-sm hover:shadow-card-hover">
+                    <div className="flex items-center justify-between">
+                      <div className="w-10 h-10 rounded-xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center font-mono font-bold text-neutral-900 dark:text-white">
+                        Py
+                      </div>
+                      <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400">Core Skill</span>
+                    </div>
+                    <h3 className="text-xl font-bold text-neutral-950 dark:text-white">Python Programming</h3>
+                    <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
+                      Writing idiomatic, clean Python for backend logic, data processing, rapid scripting, and hackathon prototypes.
+                    </p>
+                    <div className="flex flex-wrap gap-1.5 pt-2">
+                      <span className="px-2 py-1 rounded bg-neutral-100 dark:bg-neutral-800/80 text-[11px] font-medium text-neutral-700 dark:text-neutral-300">Scripting</span>
+                      <span className="px-2 py-1 rounded bg-neutral-100 dark:bg-neutral-800/80 text-[11px] font-medium text-neutral-700 dark:text-neutral-300">Automation</span>
+                      <span className="px-2 py-1 rounded bg-neutral-100 dark:bg-neutral-800/80 text-[11px] font-medium text-neutral-700 dark:text-neutral-300">FastAPI/Flask</span>
+                      <span className="px-2 py-1 rounded bg-neutral-100 dark:bg-neutral-800/80 text-[11px] font-medium text-neutral-700 dark:text-neutral-300">OOP</span>
+                    </div>
+                  </div>
+
+                  {/* Skill Card 2: C Language */}
+                  <div className="p-6 rounded-2xl bg-white dark:bg-[#121214] border border-neutral-200 dark:border-neutral-800 hover:border-black dark:hover:border-white transition-all duration-300 space-y-3 group shadow-sm hover:shadow-card-hover">
+                    <div className="flex items-center justify-between">
+                      <div className="w-10 h-10 rounded-xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center font-mono font-bold text-neutral-900 dark:text-white">
+                        C
+                      </div>
+                      <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400">Low-Level</span>
+                    </div>
+                    <h3 className="text-xl font-bold text-neutral-950 dark:text-white">C Programming & DSA</h3>
+                    <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
+                      Solid understanding of memory management, pointer arithmetic, data structures (linked lists, trees, graphs) and GCC tooling.
+                    </p>
+                    <div className="flex flex-wrap gap-1.5 pt-2">
+                      <span className="px-2 py-1 rounded bg-neutral-100 dark:bg-neutral-800/80 text-[11px] font-medium text-neutral-700 dark:text-neutral-300">Pointers</span>
+                      <span className="px-2 py-1 rounded bg-neutral-100 dark:bg-neutral-800/80 text-[11px] font-medium text-neutral-700 dark:text-neutral-300">Memory Mgmt</span>
+                      <span className="px-2 py-1 rounded bg-neutral-100 dark:bg-neutral-800/80 text-[11px] font-medium text-neutral-700 dark:text-neutral-300">DSA</span>
+                      <span className="px-2 py-1 rounded bg-neutral-100 dark:bg-neutral-800/80 text-[11px] font-medium text-neutral-700 dark:text-neutral-300">Algorithms</span>
+                    </div>
+                  </div>
+
+                  {/* Skill Card 3: Web Development & React */}
+                  <div className="p-6 rounded-2xl bg-white dark:bg-[#121214] border border-neutral-200 dark:border-neutral-800 hover:border-black dark:hover:border-white transition-all duration-300 space-y-3 group shadow-sm hover:shadow-card-hover">
+                    <div className="flex items-center justify-between">
+                      <div className="w-10 h-10 rounded-xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center font-mono font-bold text-neutral-900 dark:text-white">
+                        Web
+                      </div>
+                      <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400">Frontend</span>
+                    </div>
+                    <h3 className="text-xl font-bold text-neutral-950 dark:text-white">Frontend Web Dev</h3>
+                    <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
+                      Building modern, responsive user interfaces with React.js, Tailwind CSS, clean semantic HTML5, and JavaScript (ES6+).
+                    </p>
+                    <div className="flex flex-wrap gap-1.5 pt-2">
+                      <span className="px-2 py-1 rounded bg-neutral-100 dark:bg-neutral-800/80 text-[11px] font-medium text-neutral-700 dark:text-neutral-300">React.js</span>
+                      <span className="px-2 py-1 rounded bg-neutral-100 dark:bg-neutral-800/80 text-[11px] font-medium text-neutral-700 dark:text-neutral-300">JavaScript</span>
+                      <span className="px-2 py-1 rounded bg-neutral-100 dark:bg-neutral-800/80 text-[11px] font-medium text-neutral-700 dark:text-neutral-300">Tailwind CSS</span>
+                      <span className="px-2 py-1 rounded bg-neutral-100 dark:bg-neutral-800/80 text-[11px] font-medium text-neutral-700 dark:text-neutral-300">Responsive UI</span>
+                    </div>
+                  </div>
+
+                  {/* Services Item 4: Hackathon Rapid Prototyping */}
+                  <div className="p-6 rounded-2xl bg-white dark:bg-[#121214] border border-neutral-200 dark:border-neutral-800 hover:border-black dark:hover:border-white transition-all duration-300 space-y-3 group shadow-sm hover:shadow-card-hover">
+                    <div className="flex items-center justify-between">
+                      <div className="w-10 h-10 rounded-xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-900 dark:text-white">
+                        <IconTrophy className="w-5 h-5" />
+                      </div>
+                      <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400">Collaboration</span>
+                    </div>
+                    <h3 className="text-xl font-bold text-neutral-950 dark:text-white">Hackathon Prototyping</h3>
+                    <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
+                      Experience building end-to-end MVPs under tight timelines, solving real-world problem statements as in SIH 2026.
+                    </p>
+                    <div className="flex flex-wrap gap-1.5 pt-2">
+                      <span className="px-2 py-1 rounded bg-neutral-100 dark:bg-neutral-800/80 text-[11px] font-medium text-neutral-700 dark:text-neutral-300">Rapid MVP</span>
+                      <span className="px-2 py-1 rounded bg-neutral-100 dark:bg-neutral-800/80 text-[11px] font-medium text-neutral-700 dark:text-neutral-300">Git / GitHub</span>
+                      <span className="px-2 py-1 rounded bg-neutral-100 dark:bg-neutral-800/80 text-[11px] font-medium text-neutral-700 dark:text-neutral-300">Presentation</span>
+                    </div>
+                  </div>
+
+                  {/* Services Item 5: Developer Tooling */}
+                  <div className="p-6 rounded-2xl bg-white dark:bg-[#121214] border border-neutral-200 dark:border-neutral-800 hover:border-black dark:hover:border-white transition-all duration-300 space-y-3 group shadow-sm hover:shadow-card-hover">
+                    <div className="flex items-center justify-between">
+                      <div className="w-10 h-10 rounded-xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-900 dark:text-white">
+                        <IconBriefcase className="w-5 h-5" />
+                      </div>
+                      <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400">Tools</span>
+                    </div>
+                    <h3 className="text-xl font-bold text-neutral-950 dark:text-white">Tools & Workflow</h3>
+                    <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
+                      Proficient with modern developer workflows, terminal command line, version control, and collaborative debugging.
+                    </p>
+                    <div className="flex flex-wrap gap-1.5 pt-2">
+                      <span className="px-2 py-1 rounded bg-neutral-100 dark:bg-neutral-800/80 text-[11px] font-medium text-neutral-700 dark:text-neutral-300">Git</span>
+                      <span className="px-2 py-1 rounded bg-neutral-100 dark:bg-neutral-800/80 text-[11px] font-medium text-neutral-700 dark:text-neutral-300">VS Code</span>
+                      <span className="px-2 py-1 rounded bg-neutral-100 dark:bg-neutral-800/80 text-[11px] font-medium text-neutral-700 dark:text-neutral-300">Linux / Bash</span>
+                      <span className="px-2 py-1 rounded bg-neutral-100 dark:bg-neutral-800/80 text-[11px] font-medium text-neutral-700 dark:text-neutral-300">Postman</span>
+                    </div>
+                  </div>
+
+                  {/* Services Item 6: Clean Code Practices */}
+                  <div className="p-6 rounded-2xl bg-white dark:bg-[#121214] border border-neutral-200 dark:border-neutral-800 hover:border-black dark:hover:border-white transition-all duration-300 space-y-3 group shadow-sm hover:shadow-card-hover">
+                    <div className="flex items-center justify-between">
+                      <div className="w-10 h-10 rounded-xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-900 dark:text-white">
+                        <IconCode className="w-5 h-5" />
+                      </div>
+                      <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400">Engineering</span>
+                    </div>
+                    <h3 className="text-xl font-bold text-neutral-950 dark:text-white">Clean Code & Architecture</h3>
+                    <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
+                      Writing self-documenting code, adhering to modular component design, and avoiding premature optimization.
+                    </p>
+                    <div className="flex flex-wrap gap-1.5 pt-2">
+                      <span className="px-2 py-1 rounded bg-neutral-100 dark:bg-neutral-800/80 text-[11px] font-medium text-neutral-700 dark:text-neutral-300">Modularity</span>
+                      <span className="px-2 py-1 rounded bg-neutral-100 dark:bg-neutral-800/80 text-[11px] font-medium text-neutral-700 dark:text-neutral-300">Clean Code</span>
+                      <span className="px-2 py-1 rounded bg-neutral-100 dark:bg-neutral-800/80 text-[11px] font-medium text-neutral-700 dark:text-neutral-300">Performance</span>
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+            </section>
+
+            {/* ============================================================== */}
+            {/* 5. HACKATHONS SHOWCASE (Smart India Hackathon 2026 Spotlight) */}
+            {/* ============================================================== */}
+            <section id="hackathons" className="py-16 sm:py-20 border-t border-neutral-200 dark:border-neutral-800">
+              <div className="space-y-12">
+                
+                {/* Section Header */}
+                <div className="space-y-2">
+                  <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                    <IconTrophy className="w-3.5 h-3.5" />
+                    <span>Competitive Engineering</span>
+                  </div>
+                  <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-950 dark:text-white">
+                    Hackathons & Competitions
+                  </h2>
+                  <p className="text-neutral-600 dark:text-neutral-400 max-w-2xl text-base sm:text-lg">
+                    Demonstrating technical capability and rapid teamwork under real-world competitive hackathon conditions.
+                  </p>
+                </div>
+
+                {/* SIH 2026 Big Feature Banner */}
+                <div className="rounded-3xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#121214] p-6 sm:p-10 shadow-sm relative overflow-hidden">
+                  
+                  {/* Subtle background glow */}
+                  <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 rounded-full bg-neutral-200/40 dark:bg-neutral-800/30 blur-3xl pointer-events-none"></div>
+
+                  <div className="relative z-10 space-y-6">
+                    
+                    <div className="flex flex-wrap items-center justify-between gap-4">
+                      <div className="flex items-center gap-2">
+                        <span className="px-3 py-1 rounded-full bg-black text-white dark:bg-white dark:text-black text-xs font-semibold tracking-wide">
+                          FLAGSHIP PARTICIPATION
+                        </span>
+                        <span className="px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 text-xs font-medium border border-amber-200 dark:border-amber-800">
+                          Smart India Hackathon 2026
+                        </span>
+                      </div>
+                      <span className="text-xs font-mono text-neutral-500">JECRC University Delegation</span>
+                    </div>
+
+                    <div className="space-y-2">
+                      <h3 className="text-2xl sm:text-3xl font-extrabold text-neutral-950 dark:text-white">
+                        Smart India Hackathon 2026 (SIH)
+                      </h3>
+                      <p className="text-neutral-600 dark:text-neutral-400 max-w-3xl text-sm sm:text-base leading-relaxed">
+                        Participating in India's biggest open innovation hackathon during my 1st year at JECRC University. Focused on engineering high-impact digital public infrastructure, combining a responsive React.js frontend with Python data processing pipelines to deliver an intuitive, scalable platform for civic governance.
+                      </p>
+                    </div>
+
+                    {/* Hackathon Takeaways & Role Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                      <div className="p-4 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800">
+                        <div className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Role</div>
+                        <div className="text-base font-bold text-neutral-900 dark:text-white mt-1">Frontend & Python Logic</div>
+                        <div className="text-xs text-neutral-500 mt-1">Engineered the responsive UI components and data glue.</div>
+                      </div>
+
+                      <div className="p-4 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800">
+                        <div className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Format</div>
+                        <div className="text-base font-bold text-neutral-900 dark:text-white mt-1">36-Hour Hackathon</div>
+                        <div className="text-xs text-neutral-500 mt-1">High-pressure live sprint with team brainstorming and pitching.</div>
+                      </div>
+
+                      <div className="p-4 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200/80 dark:border-neutral-800">
+                        <div className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">Tech Stack</div>
+                        <div className="text-base font-bold text-neutral-900 dark:text-white mt-1">React + Python + C</div>
+                        <div className="text-xs text-neutral-500 mt-1">Fast algorithmic logic paired with responsive design.</div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+              </div>
+            </section>
+
+            {/* ============================================================== */}
+            {/* 6. PROJECTS SECTION (Filterable: Web, Python, C)              */}
+            {/* ============================================================== */}
+            <section id="projects" className="py-16 sm:py-20 border-t border-neutral-200 dark:border-neutral-800">
+              <div className="space-y-10">
+                
+                {/* Header & Filter Controls */}
+                <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+                  <div className="space-y-2">
+                    <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                      <IconFolder className="w-3.5 h-3.5" />
+                      <span>Portfolio Works</span>
+                    </div>
+                    <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-950 dark:text-white">
+                      Featured Projects
+                    </h2>
+                    <p className="text-neutral-600 dark:text-neutral-400 text-sm sm:text-base">
+                      Selected projects demonstrating web development, Python automation, and C systems.
+                    </p>
+                  </div>
+
+                  {/* Filter Pills */}
+                  <div className="flex flex-wrap gap-1.5 bg-neutral-100 dark:bg-neutral-900 p-1.5 rounded-full border border-neutral-200 dark:border-neutral-800 text-xs font-medium">
+                    <button
+                      onClick={() => setActiveProjectFilter('all')}
+                      className={`px-3 py-1 rounded-full transition ${
+                        activeProjectFilter === 'all'
+                          ? 'bg-black text-white dark:bg-white dark:text-black font-semibold'
+                          : 'text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white'
+                      }`}
+                    >
+                      All ({projects.length})
+                    </button>
+                    <button
+                      onClick={() => setActiveProjectFilter('hackathons')}
+                      className={`px-3 py-1 rounded-full transition ${
+                        activeProjectFilter === 'hackathons'
+                          ? 'bg-black text-white dark:bg-white dark:text-black font-semibold'
+                          : 'text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white'
+                      }`}
+                    >
+                      SIH 2026
+                    </button>
+                    <button
+                      onClick={() => setActiveProjectFilter('python')}
+                      className={`px-3 py-1 rounded-full transition ${
+                        activeProjectFilter === 'python'
+                          ? 'bg-black text-white dark:bg-white dark:text-black font-semibold'
+                          : 'text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white'
+                      }`}
+                    >
+                      Python
+                    </button>
+                    <button
+                      onClick={() => setActiveProjectFilter('c')}
+                      className={`px-3 py-1 rounded-full transition ${
+                        activeProjectFilter === 'c'
+                          ? 'bg-black text-white dark:bg-white dark:text-black font-semibold'
+                          : 'text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white'
+                      }`}
+                    >
+                      C Language
+                    </button>
+                    <button
+                      onClick={() => setActiveProjectFilter('web')}
+                      className={`px-3 py-1 rounded-full transition ${
+                        activeProjectFilter === 'web'
+                          ? 'bg-black text-white dark:bg-white dark:text-black font-semibold'
+                          : 'text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white'
+                      }`}
+                    >
+                      Web Dev
+                    </button>
+                  </div>
+                </div>
+
+                {/* Projects Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {filteredProjects.map((project) => (
+                    <div 
+                      key={project.id}
+                      className="p-6 rounded-2xl bg-white dark:bg-[#121214] border border-neutral-200 dark:border-neutral-800 hover:border-black dark:hover:border-white transition-all duration-300 space-y-4 flex flex-col justify-between group shadow-sm hover:shadow-card-hover"
+                    >
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 font-medium">
+                            {project.tag}
+                          </span>
+                          <span className="text-xs text-neutral-400 font-mono">0{project.id}</span>
+                        </div>
+                        
+                        <h3 className="text-xl font-bold text-neutral-950 dark:text-white group-hover:underline underline-offset-4">
+                          {project.title}
+                        </h3>
+                        
+                        <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
+                          {project.description}
+                        </p>
+
+                        <div className="space-y-1.5 pt-1">
+                          {project.highlights.map((h, i) => (
+                            <div key={i} className="flex items-center gap-2 text-xs text-neutral-600 dark:text-neutral-400">
+                              <span className="w-1 h-1 rounded-full bg-neutral-400"></span>
+                              <span>{h}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="pt-4 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between">
+                        <div className="flex flex-wrap gap-1.5">
+                          {project.tech.map((t, idx) => (
+                            <span 
+                              key={idx}
+                              className="text-[10px] font-mono px-2 py-0.5 rounded bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400"
+                            >
+                              {t}
+                            </span>
+                          ))}
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <a
+                            href={project.github}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="p-2 rounded-lg text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 transition"
+                            title="View Source on GitHub"
+                          >
+                            <IconGithub className="w-4 h-4" />
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+              </div>
+            </section>
+
+            {/* ============================================================== */}
+            {/* 7. CONTACT SECTION (Interactive Form + Direct Connect)         */}
+            {/* ============================================================== */}
+            <section id="contact" className="py-16 sm:py-20 border-t border-neutral-200 dark:border-neutral-800">
+              <div className="space-y-12">
+                
+                {/* Section Header */}
+                <div className="space-y-2">
+                  <div className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                    <IconMail className="w-3.5 h-3.5" />
+                    <span>Get in Touch</span>
+                  </div>
+                  <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-950 dark:text-white">
+                    Let's Connect
+                  </h2>
+                  <p className="text-neutral-600 dark:text-neutral-400 max-w-2xl text-base sm:text-lg">
+                    Whether you have a hackathon invite, freelance project, or just want to chat about C & Python, my inbox is always open.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                  
+                  {/* Left Column: Direct Info & Quick Copy */}
+                  <div className="lg:col-span-5 space-y-6">
+                    <div className="p-6 rounded-2xl bg-white dark:bg-[#121214] border border-neutral-200 dark:border-neutral-800 shadow-sm space-y-4">
+                      
+                      <div className="space-y-1">
+                        <span className="text-xs font-mono text-neutral-400">Direct Email</span>
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-sm sm:text-base font-semibold text-neutral-900 dark:text-white break-all">
+                            bharat.jecrc@gmail.com
+                          </span>
+                          <button
+                            onClick={handleCopyEmail}
+                            className="p-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition text-neutral-700 dark:text-neutral-300"
+                            title="Copy email"
+                          >
+                            <IconCopy className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="space-y-1 pt-2 border-t border-neutral-100 dark:border-neutral-800">
+                        <span className="text-xs font-mono text-neutral-400">Location</span>
+                        <div className="text-sm font-semibold text-neutral-900 dark:text-white">
+                          JECRC University, Vidhani, Jaipur, Rajasthan, India
+                        </div>
+                      </div>
+
+                      <div className="space-y-1 pt-2 border-t border-neutral-100 dark:border-neutral-800">
+                        <span className="text-xs font-mono text-neutral-400">Availability</span>
+                        <div className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                          <span>Open for collaborations & SIH 2026 sprints</span>
+                        </div>
+                      </div>
+
+                    </div>
+
+                    {/* Social pill card */}
+                    <div className="p-5 rounded-2xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 flex items-center justify-around">
+                      <a href="https://github.com" target="_blank" rel="noreferrer" className="flex flex-col items-center gap-1 text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white transition">
+                        <IconGithub className="w-5 h-5" />
+                        <span className="text-[11px] font-medium">GitHub</span>
+                      </a>
+                      <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="flex flex-col items-center gap-1 text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white transition">
+                        <IconLinkedin className="w-5 h-5" />
+                        <span className="text-[11px] font-medium">LinkedIn</span>
+                      </a>
+                      <a href="https://discord.com" target="_blank" rel="noreferrer" className="flex flex-col items-center gap-1 text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white transition">
+                        <IconDiscord className="w-5 h-5" />
+                        <span className="text-[11px] font-medium">Discord</span>
+                      </a>
+                      <a href="https://instagram.com" target="_blank" rel="noreferrer" className="flex flex-col items-center gap-1 text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white transition">
+                        <IconInstagram className="w-5 h-5" />
+                        <span className="text-[11px] font-medium">Instagram</span>
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Right Column: Contact Form */}
+                  <div className="lg:col-span-7">
+                    <form 
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        triggerToast('Thank you! Bharat has received your message.');
+                        e.target.reset();
+                      }}
+                      className="p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#121214] border border-neutral-200 dark:border-neutral-800 shadow-sm space-y-4"
+                    >
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                          <label className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">Your Name</label>
+                          <input 
+                            type="text" 
+                            required 
+                            placeholder="e.g. Alex Sharma" 
+                            className="w-full px-4 py-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-sm focus:outline-none focus:border-black dark:focus:border-white transition"
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">Your Email</label>
+                          <input 
+                            type="email" 
+                            required 
+                            placeholder="alex@example.com" 
+                            className="w-full px-4 py-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-sm focus:outline-none focus:border-black dark:focus:border-white transition"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">Subject</label>
+                        <input 
+                          type="text" 
+                          required 
+                          placeholder="SIH 2026 / Project collaboration / Hello" 
+                          className="w-full px-4 py-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-sm focus:outline-none focus:border-black dark:focus:border-white transition"
+                        />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">Message</label>
+                        <textarea 
+                          rows="4" 
+                          required 
+                          placeholder="Write your note or question here..."
+                          className="w-full px-4 py-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-sm focus:outline-none focus:border-black dark:focus:border-white transition resize-none"
+                        ></textarea>
+                      </div>
+
+                      <button
+                        type="submit"
+                        className="w-full py-3 rounded-xl bg-black text-white dark:bg-white dark:text-black font-semibold text-sm hover:opacity-90 transition active:scale-98 shadow-sm flex items-center justify-center gap-2"
+                      >
+                        <span>Send Message to Bharat</span>
+                        <IconArrowRight className="w-4 h-4" />
+                      </button>
+                    </form>
+                  </div>
+
+                </div>
+
+              </div>
+            </section>
+
+          </main>
+
+          {/* ============================================================== */}
+          {/* 8. FOOTER                                                     */}
+          {/* ============================================================== */}
+          <footer className="border-t border-neutral-200 dark:border-neutral-800 py-8 px-6 text-center text-xs text-neutral-500">
+            <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-neutral-900 dark:text-white">Bharat</span>
+                <span>• Web Developer & 1st Year CSE at JECRC University</span>
+              </div>
+              <div>
+                Designed with minimalist aesthetic • SIH 2026 Ready
+              </div>
+            </div>
+          </footer>
+
+          {/* ============================================================== */}
+          {/* RESUME MODAL (Interactive CV Preview)                          */}
+          {/* ============================================================== */}
+          {showResumeModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+              <div className="bg-white dark:bg-[#121214] border border-neutral-200 dark:border-neutral-800 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 shadow-2xl space-y-6">
+                
+                {/* Header */}
+                <div className="flex items-start justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
+                  <div>
+                    <h3 className="text-2xl font-bold text-neutral-950 dark:text-white">Curriculum Vitae</h3>
+                    <p className="text-xs text-neutral-500">Bharat • JECRC University, Jaipur</p>
+                  </div>
+                  <button
+                    onClick={() => setShowResumeModal(false)}
+                    className="p-2 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-500"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                {/* CV Content */}
+                <div className="space-y-4 text-xs sm:text-sm text-neutral-700 dark:text-neutral-300">
+                  <div className="space-y-1">
+                    <div className="text-xs font-mono uppercase text-neutral-400">Profile Summary</div>
+                    <p className="leading-relaxed">
+                      First-year Computer Science Engineering student at JECRC University, proficient in C programming, Python scripting, and modern React web application development. Active participant in Smart India Hackathon 2026 with a keen interest in problem solving, algorithms, and system architecture.
+                    </p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <div className="text-xs font-mono uppercase text-neutral-400">Education</div>
+                    <div className="font-semibold text-neutral-900 dark:text-white">Bachelor of Technology (B.Tech) - Computer Science</div>
+                    <div className="text-neutral-500">JECRC University, Jaipur (2025 – 2029) • 1st Year</div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <div className="text-xs font-mono uppercase text-neutral-400">Key Competencies</div>
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div>• <strong>Programming:</strong> C, Python, JavaScript (ES6+)</div>
+                      <div>• <strong>Web Dev:</strong> React.js, Tailwind CSS, HTML5, CSS3</div>
+                      <div>• <strong>Foundations:</strong> Data Structures, Algorithms, OOP</div>
+                      <div>• <strong>Hackathons:</strong> Smart India Hackathon (SIH 2026)</div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <div className="text-xs font-mono uppercase text-neutral-400">Notable Participation</div>
+                    <div className="font-semibold text-neutral-900 dark:text-white">Smart India Hackathon 2026</div>
+                    <div className="text-neutral-500">Developed software prototype addressing national governance challenges.</div>
+                  </div>
+                </div>
+
+                {/* Modal Footer Actions */}
+                <div className="pt-4 border-t border-neutral-200 dark:border-neutral-800 flex items-center justify-between">
+                  <button
+                    onClick={() => {
+                      triggerToast('Downloading Bharat_Resume.pdf...');
+                      // Create a downloadable text representation of the CV
+                      const resumeText = `BHARAT - WEB DEVELOPER
+1st Year Computer Science Engineering Student
+JECRC University, Jaipur
+Email: bharat.jecrc@gmail.com
+
+SKILLS:
+- Languages: Python, C, JavaScript
+- Web Tech: React.js, Tailwind CSS, HTML5, CSS3
+- Core: Data Structures, Algorithms, Problem Solving
+
+HACKATHONS:
+- Smart India Hackathon 2026 (SIH 2026) Participant
+`;
+                      const blob = new Blob([resumeText], { type: 'text/plain' });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = 'Bharat_Resume.txt';
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
+                    }}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-black text-white dark:bg-white dark:text-black font-semibold text-xs sm:text-sm hover:opacity-90 transition"
+                  >
+                    <IconDownload className="w-4 h-4" />
+                    <span>Download CV Document</span>
+                  </button>
+
+                  <button
+                    onClick={() => setShowResumeModal(false)}
+                    className="px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-800 text-xs sm:text-sm font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 transition"
+                  >
+                    Close
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          )}
+
+        </div>
+      );
+    }
+
+    // Render React root
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
